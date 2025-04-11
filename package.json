@@ -1,0 +1,43 @@
+{
+  "name": "bpjsrb-whatsapp-bot",
+  "private": "true",
+  "version": "0.0.1",
+  "main": "src/main.ts",
+  "type": "module",
+  "scripts": {
+    "start": "tsx .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint:ts": "tsc --project tsconfig.json",
+    "lint:ecma": "eslint --fix --config eslint.config.js",
+    "lint": "run-p lint:*",
+    "fmt": "prettier . --config .prettierrc --fix"
+  },
+  "author": "Mohsen Shamsitabar",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.24.0",
+    "@types/eslint": "^9.6.1",
+    "@types/eslint__js": "^9.14.0",
+    "@types/node": "^22.14.0",
+    "@types/qrcode-terminal": "^0.12.2",
+    "eslint": "^9.24.0",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-import-resolver-typescript": "^4.3.2",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-prettier": "^5.2.6",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.5.3",
+    "prettier-plugin-organize-imports": "^4.1.0",
+    "shx": "^0.4.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.29.1"
+  },
+  "dependencies": {
+    "@google-cloud/local-auth": "^3.0.1",
+    "googleapis": "^148.0.0",
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.27.0"
+  }
+}
