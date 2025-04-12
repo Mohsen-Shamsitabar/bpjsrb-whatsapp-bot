@@ -15,7 +15,9 @@ const initWhatsapp = async () => {
   const client = new Client({
     authStrategy: new LocalAuth({
       // is saves the auth status with name `clientId`.
-      clientId: "CLIENT_1"
+      // MAIN_CLIENT phonenumber: 98937 303 6686
+      // MAIN_CLIENT name: BPJSRB
+      clientId: "MAIN_CLIENT"
     }),
     puppeteer: {
       executablePath: "/Applications/Chromium.app/Contents/MacOS/Chromium",
