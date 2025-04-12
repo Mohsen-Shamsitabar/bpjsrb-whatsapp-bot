@@ -19,9 +19,23 @@ const handleMessages = async (message: WAWebJS.Message) => {
 
     switch (command) {
       case Commands.HELP: {
-        await message.reply(
-          `Available commands:\n"${CMD_CHAR}${Commands.PING}"\n"${CMD_CHAR}${Commands.REGISTER}".`
-        );
+        if (args.length > 0) {
+          await message.reply(
+            `"${CMD_CHAR}${Commands.HELP}" expects no arguments, just type "${CMD_CHAR}${Commands.HELP}"`
+          );
+
+          break;
+        }
+
+        let allAvailableCommands = "";
+
+        Object.values(Commands).forEach(cmd => {
+          if (cmd === Commands.HELP) return;
+
+          allAvailableCommands += `\n"${CMD_CHAR}${cmd}"`;
+        });
+
+        await message.reply(`Available commands:${allAvailableCommands}`);
 
         break;
       }
@@ -33,9 +47,15 @@ const handleMessages = async (message: WAWebJS.Message) => {
       }
 
       case Commands.REGISTER: {
+        let allAvailablePosition = "";
+
+        Object.values(UserPositions).forEach((position, idx) => {
+          allAvailablePosition += `\n${idx + 1}-${position}`;
+        });
+
         if (args.length !== 2) {
           await message.reply(
-            `Invalid arguments.\n-_-_-_-_-_-_-\nSyntax:\n${CMD_CHAR}${Commands.REGISTER} <username> <position>\n\nExample input:\n${CMD_CHAR}${Commands.REGISTER} MohsenShamsitabr hamyar.`
+            `Invalid arguments.\n---------------\nSyntax:\n${CMD_CHAR}${Commands.REGISTER} <username> <position>\n\nAvailable positions:${allAvailablePosition}\n---------------\nExample input:\n${CMD_CHAR}${Commands.REGISTER} MohsenShamsitabr ${UserPositions.COLLABORATOR}.`
           );
 
           break;
@@ -48,7 +68,7 @@ const handleMessages = async (message: WAWebJS.Message) => {
 
         if (!isPositionValid) {
           await message.reply(
-            `Position is invalid!\n\nValid positions:\n1-${UserPositions.ASSISTANT}\n2-${UserPositions.COLLABORATOR}\n3-${UserPositions.COMPANION}\n\nYour input was ${position}`
+            `Position is invalid!\n\nValid positions:${allAvailablePosition}`
           );
 
           break;
@@ -67,14 +87,14 @@ const handleMessages = async (message: WAWebJS.Message) => {
 
         await registeredUsers.addUser(newUser);
 
+        const userInfo = `PhoneNumber: ${phoneNumber}\nUsername: ${username}\nPosition: ${loweredPosition}`;
+
         if (phoneExists) {
           await message.reply(
-            `Phonenumber already exists, your information got updated!\n\nPhoneNumber: ${phoneNumber}\nUsername: ${username}\nPosition: ${loweredPosition}`
+            `Number already exists, your information got updated!\n\n${userInfo}`
           );
         } else {
-          await message.reply(
-            `Successfully registered!\n\nPhoneNumber: ${phoneNumber}\nUsername: ${username}\nPosition: ${loweredPosition}`
-          );
+          await message.reply(`Successfully registered!\n\n${userInfo}`);
         }
 
         break;
