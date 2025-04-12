@@ -1,11 +1,11 @@
-// === === === WWEB === === === //
+import type { UserPositions } from "./enums.ts";
 
-export type Command = "help" | "ping" | "login";
+// === === === WWEB === === === //
 
 export type User = {
   // works like ID.
   phoneNumber: string;
 
   name: string;
-  position: string;
+  position: UserPositions;
 };
