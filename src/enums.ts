@@ -2,12 +2,13 @@
 
 export enum Commands {
   HELP = "help",
+  TEST = "test",
   PING = "ping",
   REGISTER = "register"
 }
 
 export enum UserPositions {
-  HAMRAH = "hamrah",
-  HAMYAR = "hamyar",
-  DASTYAR = "dastyar"
+  COMPANION = "companion",
+  COLLABORATOR = "collaborator",
+  ASSISTANT = "assistant"
 }

@@ -9,3 +9,6 @@ export type User = {
   name: string;
   position: UserPositions;
 };
+
+export type UsersMap = Map<string, User>;
+export type UsersRecord = Record<string, User>;
