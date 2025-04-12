@@ -1,5 +1,5 @@
 import type WAWebJS from "whatsapp-web.js";
-import { Command } from "../../types.ts";
+import type { Command } from "../../types.ts";
 import { CMD_CHAR, CMD_DELIMITER } from "../config.ts";
 
 const handleMessages = async (message: WAWebJS.Message) => {

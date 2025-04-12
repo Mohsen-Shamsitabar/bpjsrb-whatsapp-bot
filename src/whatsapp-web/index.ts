@@ -1,3 +1,6 @@
+/* eslint-disable eslint-comments/disable-enable-pair */
+/* eslint-disable @typescript-eslint/no-misused-promises */
+
 import WAWeb from "whatsapp-web.js";
 import {
   handleDisconnect,
