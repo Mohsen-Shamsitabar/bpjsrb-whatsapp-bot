@@ -2,13 +2,19 @@
 
 export enum Commands {
   HELP = "help",
-  TEST = "test",
   PING = "ping",
-  REGISTER = "register"
+  REGISTER = "register",
+  CHECK = "check",
+  USERS = "users"
 }
 
 export enum UserPositions {
   COMPANION = "companion",
   COLLABORATOR = "collaborator",
   ASSISTANT = "assistant"
+}
+
+export enum CacheIds {
+  REGISTERED_USERS = "registered-users",
+  CHECK_LIST = "check-list"
 }
