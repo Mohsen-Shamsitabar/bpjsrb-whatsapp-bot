@@ -1,9 +1,12 @@
+import { nanoid } from "nanoid";
 import type WAWebJS from "whatsapp-web.js";
-import { registeredUsers } from "../../data/index.ts";
 import { Commands, UserPositions } from "../../enums.ts";
-import { type User } from "../../types.ts";
-import checkPositionValidity from "../../utilities/check-position-validity.ts";
+import { registeredUsers } from "../../storage-manager/index.ts";
+import checkList from "../../storage-manager/storages/checked-list.ts";
+import { type CheckInfo, type User } from "../../types.ts";
 import coloredText from "../../utilities/colored-text.ts";
+import getPhoneNumberFromId from "../../utilities/get-phonenumber-from-id.ts";
+import { isCmdDisabled, isPositionValid } from "../../utilities/index.ts";
 import { CMD_CHAR, CMD_DELIMITER } from "../config.ts";
 
 const handleMessages = async (message: WAWebJS.Message) => {
@@ -16,6 +19,14 @@ const handleMessages = async (message: WAWebJS.Message) => {
     const args = strippedCmd.split(CMD_DELIMITER);
 
     const command = args.shift()?.toLowerCase() as Commands;
+
+    const isCommandDisabled = isCmdDisabled(command);
+
+    if (isCommandDisabled) {
+      await message.reply("This command is currently disabled!");
+
+      return;
+    }
 
     switch (command) {
       case Commands.HELP: {
@@ -64,9 +75,7 @@ const handleMessages = async (message: WAWebJS.Message) => {
         const [username, position] = args as [string, string];
         const loweredPosition = position.toLowerCase();
 
-        const isPositionValid = checkPositionValidity(loweredPosition);
-
-        if (!isPositionValid) {
+        if (!isPositionValid(loweredPosition)) {
           await message.reply(
             `Position is invalid!\n\nValid positions:${allAvailablePosition}`
           );
@@ -76,8 +85,9 @@ const handleMessages = async (message: WAWebJS.Message) => {
 
         // 989934411603@c.us
         const senderId = message.from;
-        const phoneNumber = senderId.replace("@c.us", "").replace("@g.us", "");
-        const phoneExists = registeredUsers.users.has(phoneNumber);
+        const phoneNumber = getPhoneNumberFromId(senderId);
+        const user =
+          registeredUsers.get<User | undefined>(phoneNumber) ?? false;
 
         const newUser: User = {
           name: username,
@@ -85,11 +95,11 @@ const handleMessages = async (message: WAWebJS.Message) => {
           position: loweredPosition
         };
 
-        await registeredUsers.addUser(newUser);
+        registeredUsers.set(phoneNumber, newUser);
 
-        const userInfo = `PhoneNumber: ${phoneNumber}\nUsername: ${username}\nPosition: ${loweredPosition}`;
+        const userInfo = `Phone number: ${phoneNumber}\nUsername: ${username}\nPosition: ${loweredPosition}`;
 
-        if (phoneExists) {
+        if (user) {
           await message.reply(
             `Number already exists, your information got updated!\n\n${userInfo}`
           );
@@ -100,8 +110,48 @@ const handleMessages = async (message: WAWebJS.Message) => {
         break;
       }
 
-      case Commands.TEST: {
-        await message.reply("TESTING!");
+      case Commands.CHECK: {
+        const senderId = message.from;
+        const phoneNumber = getPhoneNumberFromId(senderId);
+        const user =
+          registeredUsers.get<User | undefined>(phoneNumber) ?? false;
+
+        if (!user) {
+          await message.reply(
+            `Phone number doesnt exist!\n\nPlease register using "${CMD_CHAR}${Commands.REGISTER}".`
+          );
+
+          break;
+        }
+
+        const time = new Date(Date.now()).toLocaleTimeString();
+        const date = new Date(Date.now()).toLocaleDateString();
+        const id = nanoid();
+
+        const checkInfo: CheckInfo = { ...user, date, time };
+
+        checkList.set(id, checkInfo);
+
+        await message.reply(
+          `Successfully checked!\n\nTime: ${time}\nDate: ${date}\n\n---------------\nID: ${id}`
+        );
+
+        break;
+      }
+
+      case Commands.USERS: {
+        const allRegisteredUsersRecord: Record<string, User> =
+          registeredUsers.all();
+
+        let allRegisteredUsers = "";
+
+        Object.entries(allRegisteredUsersRecord).forEach(([_, user], idx) => {
+          allRegisteredUsers += `${idx + 1}- ${user.name}, ${user.position}, ${user.phoneNumber}`;
+        });
+
+        await message.reply(
+          "List of all registered users:\n\n" + `${allRegisteredUsers}`
+        );
 
         break;
       }
@@ -114,6 +164,8 @@ const handleMessages = async (message: WAWebJS.Message) => {
         break;
       }
     }
+  } else {
+    await message.reply(`Try "${CMD_CHAR}${Commands.HELP}".`);
   }
 };
 
