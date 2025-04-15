@@ -15,7 +15,7 @@ dist-ssr
 # Whatsapp related files
 .wwebjs_auth
 .wwebjs_cache
-registered-users.json
+.cache
 
 # google API
 google.json
