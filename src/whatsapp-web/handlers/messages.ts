@@ -35,7 +35,7 @@ const handleMessages = async (message: WAWebJS.Message) => {
             `"${CMD_CHAR}${Commands.HELP}" expects no arguments, just type "${CMD_CHAR}${Commands.HELP}"`
           );
 
-          break;
+          return;
         }
 
         let allAvailableCommands = "";
@@ -48,13 +48,13 @@ const handleMessages = async (message: WAWebJS.Message) => {
 
         await message.reply(`Available commands:${allAvailableCommands}`);
 
-        break;
+        return;
       }
 
       case Commands.PING: {
         await message.reply("pong");
 
-        break;
+        return;
       }
 
       case Commands.REGISTER: {
@@ -69,7 +69,7 @@ const handleMessages = async (message: WAWebJS.Message) => {
             `Invalid arguments.\n---------------\nSyntax:\n${CMD_CHAR}${Commands.REGISTER} <username> <position>\n\nAvailable positions:${allAvailablePosition}\n---------------\nExample input:\n${CMD_CHAR}${Commands.REGISTER} MohsenShamsitabr ${UserPositions.COLLABORATOR}.`
           );
 
-          break;
+          return;
         }
 
         const [username, position] = args as [string, string];
@@ -80,7 +80,7 @@ const handleMessages = async (message: WAWebJS.Message) => {
             `Position is invalid!\n\nValid positions:${allAvailablePosition}`
           );
 
-          break;
+          return;
         }
 
         // 989934411603@c.us
@@ -107,7 +107,7 @@ const handleMessages = async (message: WAWebJS.Message) => {
           await message.reply(`Successfully registered!\n\n${userInfo}`);
         }
 
-        break;
+        return;
       }
 
       case Commands.CHECK: {
@@ -121,7 +121,7 @@ const handleMessages = async (message: WAWebJS.Message) => {
             `Phone number doesnt exist!\n\nPlease register using "${CMD_CHAR}${Commands.REGISTER}".`
           );
 
-          break;
+          return;
         }
 
         const time = new Date(Date.now()).toLocaleTimeString();
@@ -136,10 +136,18 @@ const handleMessages = async (message: WAWebJS.Message) => {
           `Successfully checked!\n\nTime: ${time}\nDate: ${date}\n\n---------------\nID: ${id}`
         );
 
-        break;
+        return;
       }
 
       case Commands.USERS: {
+        if (registeredUsers.keys().length === 0) {
+          await message.reply(
+            `No registered users found!\nPlease use "${CMD_CHAR}${Commands.REGISTER}" to register.`
+          );
+
+          return;
+        }
+
         const allRegisteredUsersRecord: Record<string, User> =
           registeredUsers.all();
 
@@ -153,7 +161,7 @@ const handleMessages = async (message: WAWebJS.Message) => {
           "List of all registered users:\n\n" + `${allRegisteredUsers}`
         );
 
-        break;
+        return;
       }
 
       default: {
@@ -161,12 +169,13 @@ const handleMessages = async (message: WAWebJS.Message) => {
           `Unrecognized command. Try "${CMD_CHAR}${Commands.HELP}".`
         );
 
-        break;
+        return;
       }
     }
-  } else {
-    await message.reply(`Try "${CMD_CHAR}${Commands.HELP}".`);
   }
+  //  else {
+  //   await message.reply(`Try "${CMD_CHAR}${Commands.HELP}".`);
+  // }
 };
 
 export default handleMessages;
