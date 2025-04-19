@@ -1,6 +1,13 @@
-import { createFromFile } from "flat-cache";
+import { createFromFile, FlatCacheEvents } from "flat-cache";
 import { CACHE_DIR, PERSIST_INTERVAL_TIME } from "../../constants.ts";
 import { CacheIds } from "../../enums.ts";
+import {
+  addValuesToSheet,
+  SheetNames,
+  SheetRanges
+} from "../../google-sheets/index.ts";
+import type { User } from "../../types.ts";
+import { parseUser } from "../../utilities/index.ts";
 
 // const registeredUsers = new FlatCache({
 //   cacheId: CacheIds.REGISTERED_USERS,
@@ -17,5 +24,22 @@ const registeredUsers = createFromFile(
     persistInterval: PERSIST_INTERVAL_TIME
   }
 );
+
+const saveToSheets = async () => {
+  const records = registeredUsers.all();
+  const data = Object.values<User>(records);
+
+  const parsedData = data.map(user => parseUser(user));
+
+  await addValuesToSheet({
+    method: "update",
+    sheetName: SheetNames.REGISTERED_USERS,
+    sheetRange: SheetRanges.REGISTERED_USERS,
+    values: parsedData
+  });
+};
+
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+registeredUsers.on(FlatCacheEvents.SAVE, saveToSheets);
 
 export default registeredUsers;
